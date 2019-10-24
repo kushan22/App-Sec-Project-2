@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+    <div class="container">
+        <h1>Spell Checker Program</h1>
+        <form action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ wtf.form_field(form.wordsToCheck, class="form-control", placeholder="Enter Sentence to check") }}
+            </div>
+             {{ wtf.form_field(form.submit,class="btn btn-success")}}
+        </form>
+    <br>
+    <br>
+    {% if length > 0 %}
+    <div class="row">
+        <div class="col-sm-6">
+            <h1>Supplied Text</h1>
+            <p id="textout">{{ suppliedText }}</p>
+        </div>
+        <div class="col-sm-6">
+         <h1>List of misspelled words</h1>
+             <ul class="list-group" id="misspelled">
+                {% for i in range(0,length) %}
+                    <li class="list-group-item">{{  misspelled[i] }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+    </div>
+    {% endif %}
+
+
+    </div>
+{% endblock %}

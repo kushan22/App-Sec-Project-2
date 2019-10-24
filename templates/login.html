@@ -1,10 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
 
-</body>
-</html>
+
+<div class="container">
+
+    <h1>Login</h1>
+    <form action="" method="POST" novalidate>
+         {{ form.hidden_tag() }}
+
+
+         <div class="form-group">
+
+
+            {{ wtf.form_field(form.username, class="form-control", placeholder="What's your username?") }}
+
+         </div>
+         <div class="form-group">
+            {{ wtf.form_field(form.password, class="form-control", placeholder="What's your password?") }}
+
+         </div>
+        <div class="form-group">
+            {{ wtf.form_field(form.twoFactAuth, class="form-control", placeholder="What's your Two Fact Auth?") }}
+        </div>
+        {{ wtf.form_field(form.submit,class="btn btn-success")}}
+
+    </form>
+    <br>
+    <br>
+    {% if status == 0 %}
+        <div class="alert alert-success" id="result">Success</div>
+    {% elif status == 1 %}
+        <div class="alert alert-danger" id="result">Two Factor Authentication Failure</div>
+    {% elif status == 2 %}
+        <div class="alert alert-danger" id="result">Incorrect Username or Password</div>
+    {% endif %}
+</div>
+{% endblock %}

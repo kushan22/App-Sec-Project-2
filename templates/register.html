@@ -26,5 +26,12 @@
         {{ wtf.form_field(form.submit,class="btn btn-success")}}
 
     </form>
+    <br>
+    <br>
+    {% if error %}
+        <div class="alert alert-danger" id="success">Failure</div>
+    {% elif error == False %}
+        <div class="alert alert-success" id="success">Success</div>
+    {% endif %}
 </div>
 {% endblock %}
