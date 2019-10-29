@@ -15,6 +15,7 @@ class MyTestCase(unittest.TestCase):
     def tearDown(self) -> None:
         pass
 
+    #Check for registration
     def register(self,username,password,twoFactAuth):
         return self.app.post(
             '/register',
