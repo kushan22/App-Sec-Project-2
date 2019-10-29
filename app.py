@@ -1,22 +1,54 @@
-from flask import Flask,redirect, escape,session
+from flask import Flask,redirect, escape,session,request,url_for
 from flask_bootstrap import Bootstrap
 from flask import render_template
 from config import Config
 from forms import RegisterForm,LoginForm,SpellCheckerForm
 import json,shlex,subprocess
 from flask_bcrypt import Bcrypt
+
+
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
 bootstrap = Bootstrap(app)
 bcrypt = Bcrypt(app)
 
+SELF= "'self'"
+
+content_security_policy = {
+    'default-src': [SELF,'cdnjs.cloudflare.com'],
+    'img-src': '*',
+    'script-src': [
+        SELF,
+        'cdnjs.cloudflare.com',
+    ],
+    'style-src': [
+        SELF,
+        'cdnjs.cloudflare.com',
+    ],
+}
+
+
+
 # data = []
 
-@app.route('/',methods=['GET','POST'])
+@app.after_request
+def add_security_headers(resp):
+    resp.headers['Content-Security-Policy'] = content_security_policy
+    resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    resp.headers['X-XSS-Protection'] = '1; mode=block'
+    return resp
+
+
+@app.route("/")
+def index():
+    return redirect(url_for('home'))
+
+@app.route('/spell_check',methods=['GET','POST'])
 def home():
     if 'username' not in session:
-        return redirect('/login')
+        return redirect(url_for('login'))
 
     misspelledarr = []
     form = SpellCheckerForm()
@@ -36,45 +68,48 @@ def home():
 
 @app.route('/register', methods=['GET','POST'])
 def register():
+    if 'username' in session:
+        return redirect('/')
     form = RegisterForm()
 
     userDetails = {}
-    if form.validate_on_submit():
-        with open("database/users.json","r") as fp:
+
+    if request.method == 'POST' and form.validate_on_submit():
+        with open("./database/users.json","r") as fp:
             users = json.loads(fp.read())
         for d in users:
             if d['username'] == form.username.data:
-                error = True
-                return render_template('register.html',form=form,error=error)
+                error=True
+                return render_template('register.html',form=form,error=error),406
         userDetails['username'] = escape(form.username.data)
-        print(bcrypt.generate_password_hash(escape(form.password.data)))
         userDetails['password'] = bcrypt.generate_password_hash(escape(form.password.data)).decode('utf-8')
         userDetails['twoFactAuth'] = escape(form.twoFactAuth.data)
 
         users.append(userDetails)
-        with open('database/users.json','w') as f:
+        with open('./database/users.json','w') as f:
             json.dump(users,f)
-        error = False
-        return render_template('register.html',form=form,error=error)
+
+        return redirect(url_for('login'))
     error = None
     # print(form.errors)
     return render_template('register.html',form=form,error = error)
 
 @app.route('/login',methods=['GET','POST'])
 def login():
+    if 'username' in session:
+        return redirect(url_for('home'))
     form = LoginForm()
     userName = escape(form.username.data)
     password = escape(form.password.data)
     twoFactAuth = escape(form.twoFactAuth.data)
     if form.validate_on_submit():
 
-        with open("database/users.json","r") as f:
+        with open("./database/users.json","r") as f:
             users = json.loads(f.read())
         for d in users:
             if d['username'] == userName and bcrypt.check_password_hash(d['password'],password) and d['twoFactAuth'] == twoFactAuth:
-                status = 0
                 session['username'] = userName
-                return render_template('login.html',form=form,status=status)
+                return redirect(url_for('home'))
             elif d['username'] == userName and bcrypt.check_password_hash(d['password'],password) and d['twoFactAuth'] != twoFactAuth:
                 status = 1
                 return render_template('login.html',form=form,status=status)
