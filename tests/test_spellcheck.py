@@ -2,6 +2,7 @@ import unittest
 import json
 from app import app
 
+
 class MyTestCase(unittest.TestCase):
     def test_something(self):
         self.assertEqual(True, True)
@@ -35,13 +36,14 @@ class MyTestCase(unittest.TestCase):
     #     pass
 
     def test_valid_user_registration(self):
-        response = self.register('kushan22','1234','2345')
+        response = self.register('rahul','1234','2345')
         self.assertEqual(response.status_code, 200)
         with open("./database/users.json","r") as fp:
             users = json.loads(fp.read())
 
         for user in users:
-            self.assertNotIn(user['username'],'kushan22')
+            self.assertNotIn(user['username'],'rahul')
+
 
 
 
