@@ -25,12 +25,12 @@ class MyTestCase(unittest.TestCase):
 
 
 
-    # def login(self,username,password,twoFactAuth):
-    #     return self.app.post(
-    #         '/login',
-    #         data=dict(username=username,password=password,twoFactAuth=twoFactAuth),
-    #         follow_redirects=True
-    #     )
+    def login(self,username,password,twoFactAuth):
+        return self.app.post(
+            '/login',
+            data=dict(username=username,password=password,twoFactAuth=twoFactAuth),
+            follow_redirects=True
+        )
 
     #
     # def spellcheck(self):
@@ -44,6 +44,10 @@ class MyTestCase(unittest.TestCase):
 
         for user in users:
             self.assertNotIn(user['username'],'rahul')
+
+    def test_valid_login(self):
+        response = self.login("kushan22","1234","9293326764")
+        self.assertEqual(response.status_code,200)
 
 
 
