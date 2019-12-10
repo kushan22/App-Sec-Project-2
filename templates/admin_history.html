@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+
+    <div class="container">
+
+    <form action="" method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ wtf.form_field(form.username, class="form-control", placeholder="Enter username") }}
+            </div>
+             {{ wtf.form_field(form.submit,class="btn btn-success")}}
+        </form>
+
+    {% if num_of_queries > 0 %}
+    <h1 id="numqueries">Number of Queries {{ num_of_queries }}</h1>
+        <ul class="list-group">
+                {% for u in userQueries %}
+                    <li class="list-group-item" id="query{{ u.id }}"><a href="history/query{{ u.id }}">{{  u.sentence }} </a></li>
+                {% endfor %}
+        </ul>
+    {% endif %}
+
+    </div>
+
+{% endblock %}

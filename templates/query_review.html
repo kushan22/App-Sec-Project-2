@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+    <div class="container">
+        <h1 id="username">Welcome {{ username }} </h1>
+        <h3 id="queryid"> Details of  query {{ query_id }} is shown below</h3>
+
+     <div class="row">
+        <div class="col-sm-6">
+            <h2>Query Text</h2>
+            <p id="querytext">{{ queryText }}</p>
+        </div>
+        <div class="col-sm-6">
+         <h2>List of misspelled words</h2>
+             <ul class="list-group" id="queryresults">
+                {% for q in queryResult %}
+                    <li class="list-group-item">{{  q }}</li>
+                {% endfor %}
+            </ul>
+
+        </div>
+
+    </div>
+    </div>
+
+{% endblock %}

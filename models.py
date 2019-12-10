@@ -2,12 +2,14 @@ from app import db
 from flask_login import UserMixin
 from app import login
 
+
 class User(UserMixin,db.Model):
     id = db.Column(db.Integer,primary_key=True)
     username = db.Column(db.String(64),index=True,unique=True)
     password_hash = db.Column(db.String(128))
-    twoFactAuth = db.Column(db.String(9),unique=True)
+    twoFactAuth = db.Column(db.String(11))
     user_queries = db.relationship('UserQueries', backref="author", lazy="dynamic")
+    user_logs = db.relationship('UserLogs',backref='author',lazy="dynamic")
 
 
 
@@ -23,6 +25,15 @@ class UserQueries(db.Model):
 
     def __repr__(self):
         return "<User {}>".format(self.sentence)
+
+class UserLogs(db.Model):
+    id = db.Column(db.Integer,primary_key=True)
+    login_time = db.Column(db.DateTime,nullable=True)
+    logout_time = db.Column(db.DateTime,nullable=True)
+    user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return "<UserLogs {}>".format(self.login_time)
 
 
 

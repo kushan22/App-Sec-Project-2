@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block content %}
+
+    <div class="container">
+
+        <form action="" method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ wtf.form_field(form.userid, class="form-control", placeholder="Enter Userid") }}
+            </div>
+             {{ wtf.form_field(form.submit,class="btn btn-success")}}
+        </form>
+
+
+    <br>
+    <br>
+        {% if num_of_logs > 0 %}
+            <table class="table table-responsive table-bordered">
+                <thead>
+                    <th scope="col">User Id</th>
+                    <th scope="col">Login Time</th>
+                    <th scope="col">Logout Time</th>
+                </thead>
+                <tbody>
+                    {% for logs in userlogs %}
+                        <tr id="login{{ logs.id }}">
+                            <td>{{  logs.user_id }}</td>
+                            <td id="login{{ logs.id }}_time">{{  logs.login_time }}</td>
+                            <td id="logout{{ logs.id }}_time">{{  logs.logout_time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+
+
+    </div>
+
+{% endblock %}
