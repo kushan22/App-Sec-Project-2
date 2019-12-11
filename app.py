@@ -3,7 +3,7 @@ from flask_bootstrap import Bootstrap
 from flask import render_template
 from config import Config
 
-import json,shlex,subprocess
+import shlex,subprocess
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate

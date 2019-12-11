@@ -1,6 +1,7 @@
 import unittest
-import json
-from app import app
+from app import app,db
+from models import User,UserQueries
+
 
 
 class MyTestCase(unittest.TestCase):
@@ -11,11 +12,14 @@ class MyTestCase(unittest.TestCase):
         app.config['TESTING'] = True
         app.config['DEBUG'] = False
         self.app = app.test_client()
+        db.session.close()
+        db.drop_all()
+        db.create_all()
 
     def tearDown(self) -> None:
         pass
 
-    #Check for registration
+
     def register(self,username,password,twoFactAuth):
         return self.app.post(
             '/register',
@@ -32,22 +36,62 @@ class MyTestCase(unittest.TestCase):
             follow_redirects=True
         )
 
+    def spellCheck(self,sentence):
+        return self.app.post(
+            '/spell_check',
+            data=dict(sentence=sentence),
+            follow_redirects=True
+        )
+
+
+
+
+
     #
     # def spellcheck(self):
     #     pass
 
+#Database Models Test
+
+    def test_user_database(self):
+        user = User(username="testuser",password_hash="$2b$12$B8UKLo0ORCQOU9c0Sp7lmO5x7ddi43YJeQgnvriVeDOxI2WA6ERh2",twoFactAuth="123456789")
+        db.session.add(user)
+        db.session.commit()
+
+        users = User.query.all()
+        assert user in users
+
+
+    def test_user_queries(self):
+
+        userquery = UserQueries(sentence="Hey Everything is amazing, What abt you",misspelled_words="abt",user_id=1)
+        db.session.add(userquery)
+        db.session.commit()
+
+        queries = UserQueries.query.all()
+        assert userquery in queries
+
+
+
     def test_valid_user_registration(self):
         response = self.register('rahul','1234','2345')
         self.assertEqual(response.status_code, 200)
-        with open("./database/users.json","r") as fp:
-            users = json.loads(fp.read())
 
-        for user in users:
-            self.assertNotIn(user['username'],'rahul')
 
     def test_valid_login(self):
         response = self.login("kushan22","1234","9293326764")
         self.assertEqual(response.status_code,200)
+
+    def test_spell_check(self):
+        response = self.spellCheck("Wasssup Homie al gd")
+        self.assertEqual(response.status_code,200)
+
+
+
+
+
+
+
 
 
 
