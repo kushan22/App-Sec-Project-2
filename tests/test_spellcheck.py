@@ -44,12 +44,20 @@ class MyTestCase(unittest.TestCase):
         )
 
 
+    def history(self,username):
+        return self.app.get(
+            '/history',
+            query_string=dict(username=username),
+            follow_redirects=True
+        )
+
+
 
 
 
     #
     # def spellcheck(self):
-    #     pass
+    #     passhttps://github.com/kushan22/App-Sec-Project-2
 
 #Database Models Test
 
@@ -84,6 +92,10 @@ class MyTestCase(unittest.TestCase):
 
     def test_spell_check(self):
         response = self.spellCheck("Wasssup Homie al gd")
+        self.assertEqual(response.status_code,200)
+
+    def test_history(self):
+        response = self.history("testuser")
         self.assertEqual(response.status_code,200)
 
 
