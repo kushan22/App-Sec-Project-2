@@ -1,6 +1,7 @@
 import unittest
 from app import app,db
 from models import User,UserQueries
+from flask_login import current_user
 
 
 
@@ -51,6 +52,13 @@ class MyTestCase(unittest.TestCase):
             follow_redirects=True
         )
 
+    def unauthorized_query(self,query_id):
+        return self.app.get(
+            '/history/query<query_id>',
+            query_string=dict(query_id=query_id),
+            follow_redirects=True
+        )
+
 
 
 
@@ -97,6 +105,29 @@ class MyTestCase(unittest.TestCase):
     def test_history(self):
         response = self.history("testuser")
         self.assertEqual(response.status_code,200)
+
+    def test_unauthorized_queries(self):
+        user = User(username="admin",password_hash="1261721782",twoFactAuth="12345678")
+        db.session.add(user)
+        db.session.commit()
+
+        userid = User.query.filter_by(username="admin").first().id
+        query = UserQueries(sentence="All Gd or All Wll",misspelled_words="Gd Wll",user_id=userid)
+        db.session.add(query)
+        db.session.commit()
+
+        user2 = User(username="testuser",password_hash="1234",twoFactAuth="345678")
+        db.session.add(user2)
+        db.session.commit()
+
+        current_user = user2
+
+
+
+        response = self.unauthorized_query(query.id)
+        self.assertEqual(response.status_code,200)
+
+
 
 
 
