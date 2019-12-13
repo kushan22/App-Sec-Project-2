@@ -1,8 +1,6 @@
 import unittest
-from app import app,db
-from models import User,UserQueries
-from flask_login import current_user
-
+from app.routes import app,db
+from app.models import User,UserQueries
 
 
 class MyTestCase(unittest.TestCase):
